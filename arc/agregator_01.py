@@ -5,7 +5,7 @@ class Work_Files():
 
 	def __init__(self, directory):
 		self.directory = directory		
-		self.get_work_files()
+		self.get_work_files() # список объединяемых файлов
 
 
 	def execute(self):
@@ -100,7 +100,11 @@ class Work_Files():
 
 class Work_File():
 	EXTENT=[".docx", ".docm", ".odt", ".xlsx", ".xlsm", ".ods", ".sxc", ".xps", ".mdb"]
-	ESSENTIAL_FIELDS = ["имя файла", "папка"]
+
+	FULLPATH = "полный путь"
+	DIRECTORY = "папка"
+	FILENAME = "имя файла"
+	ESSENTIAL_FIELDS = [FILENAME, DIRECTORY]
 	
 	def __init__(self, st, path):
 		self.path = os.path.join(path, st)
@@ -110,13 +114,15 @@ class Work_File():
 		self.file_list = [] # список файлов, ассоциированный с ключевым словом
 		self.normal_set = set() #множестово строк в фале. Множество, чтобы легче было исключать повторяющиеся строки из других файлов
 		# она присваивается в normalize_file_list, но нигде дальше не используется
+		# по умолчанию предполагаем, что у нас не полный путь, а файл архивариуса с разбивкой
+		self.fullpath = False
 		self.get_header()
 		if not self.fullpath:
 			self.get_file_list()
 		else:
 			self.get_file_list_fullpath()
 		# зачем для восстановления docx передавать параметры с заголовками столбцов?
-		self.restore_docx(self.headdic["имя файла"], self.headdic["папка"])
+		self.restore_docx(self.headdic[Work_File.FILENAME], self.headdic[Work_File.DIRECTORY])
 
 	def get_header(self):
 		"""
@@ -127,53 +133,55 @@ class Work_File():
 		Возвращает черыре параметра:
 		valid_format(Bool) - пригоден ли файл для дальнейшей обработки.
 		fullpath(Bool) - является ли файл списком файлов (либо архивариуса)
-		hheaddic(словарь) - словарь столбцов, где названию столбца поставлен в 
+		hheaddic(словарь) - словарь столбцов, где названию столбца поставлен номер столбца
 		"""
-		headstr = open(self.path, encoding="utf-16").readline()# первая строка, ищет заголовок
-		headstr = headstr.rstrip()
-		headstr = headstr.lower() # понижаем региср в заголовке для того, чтобы можно было нормально сравнивать
-		headlist = headstr.split("\t")
+		def get_file_header(fpath):
+			headstr = open(fpath, encoding="utf-16").readline()# первая строка, ищет заголовок
+			headstr = headstr.rstrip()
+			headstr = headstr.lower() # понижаем региср в заголовке для того, чтобы можно было нормально сравнивать
+			headlist = headstr.split("\t")
+			return headlist
+
+		headlist = get_file_header(self.path)
 		self.headset = set(headlist)
 		# если есть полный путь, путь и файл, удаляем полный путь
-		if ("полный путь" in self.headset) and self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
-			self.headset.discard("полный путь")
+		if (Work_File.FULLPATH in self.headset) and self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
+			self.headset.discard(Work_File.FULLPATH)
 		# если есть только полный путь, ставим флаг для последующего разбития полного пути на части normalize_file_list
-		if ("полный путь" in self.headset) and not self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
+		if (Work_File.FULLPATH in self.headset) and not self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
 			self.fullpath = True
-		else:
-			self.fullpath = False
-		# путь присутствует: либо полный либо в виде пары путь-файл. правильный формат
-		if ("полный путь" in self.headset) or self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
+		# путь присутствует: либо полный либо в виде пары путь-файл. Это правильный формат, можно обрабатывать
+		if (Work_File.FULLPATH in self.headset) or self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
 			self.valid_format = True
 			self.headdic = {headlist[i]: i for i in range(len(headlist))} #словарь заголовка, где названию столбца сопоставляется номер столбца
-			
-			
 			# по названию столбца можно определить его номер
 		else:
 			self.valid_format = False
 
+
 	def get_file_list(self):
 		for f_str in open(self.path, encoding="utf-16").readlines():
-			f = f_str.rstrip()
+			# удаляем только возврат каретки, чтобы таб случайно не оттяпать, была такая ошибка
+			f = f_str.rstrip('\n')
 			f = f.split("\t")
-			ffilename = (f[self.headdic["имя файла"]])
+			ffilename = (f[self.headdic[Work_File.FILENAME]])
 			if ffilename == "": # заменияет пустые имена файлов на "text.txt"
-				f[self.headdic["имя файла"]] = "text.txt" # этот случай возникает при обработке почтовых файлов
+				f[self.headdic[Work_File.FILENAME]] = "text.txt" # этот случай возникает при обработке почтовых файлов
 			self.file_list.append(f) # добавляет строку к списку файлов
-		self.file_list.pop(0) # выкидывает заголовко
+		self.file_list.pop(0) # выкидывает заголовок
 
 	def get_file_list_fullpath(self):
 		for f_str in open(self.path, encoding="utf-16").readlines():
 			f = f_str.rstrip()
 			f = f.split("\t")
-			ffilename = os.path.basename(f[self.headdic["полный путь"]])
+			ffilename = os.path.basename(f[self.headdic[Work_File.FULLPATH]])
+			# случай когда в полном пути к файлу отсутствует имя файла. Довольно сомнительно.
 			if ffilename == "":
 				ffilename = "text.txt" # получает имя файла
-			
-			fpath = os.path.dirname(f[self.headdic["полный путь"]])
+			fpath = os.path.dirname(f[self.headdic[Work_File.FULLPATH]])
 			if not fpath.endswith("\\"): 
-				fpath += "\\" # получает путь и бобавляет слэш, если что
-			f.extend([fpath, ffilename]) # добавляет два новых столбца в строку
+				fpath += "\\" # получает путь и добавляет слэш, если что
+			f.extend((fpath, ffilename)) # добавляет два новых столбца в строку
 			self.file_list.append(f)
 		self.file_list.pop(0)
 		self.modify_header() 
@@ -198,7 +206,7 @@ class Work_File():
 	def normalize_file_list(self, global_header):
 		for f_str in self.file_list:
 
-			s = [None for n in range(len(global_header))]
+			s = [None] * (len(global_header))
 			for i in global_header:
 				s[global_header[i]] = f_str[self.headdic[i]]
 			string = "\t".join(s)
@@ -249,6 +257,10 @@ class Work_File():
 
 
 if __name__ == '__main__':
+	if len(sys.argv) < 2:
+		print('В аргументе нужно указать папку с обрабатываемыми файлами.')
+		sys.exit(1)
+	print(sys.argv, len(sys.argv))
 	a = Work_Files(sys.argv[1])
 	print("="*40)
 	for item in a.workfiles:

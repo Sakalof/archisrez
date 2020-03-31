@@ -226,9 +226,6 @@ class Application():
 			self.f_di.add_info("-"*50)
 
 
-
-
-
 def is_utf16_encoding(file):
 	unicode_enc = True
 	try:
@@ -250,7 +247,7 @@ logging.debug("="*60)
 #logging.debug(time.strftime("%d.%m.%Y %H:%M:%S", time.localtime(cur_date)))
 logging.debug("Program Started")
 #print("Самый верх: ", root)
-root.title("Архисрез 0.50")
+root.title("Архисрез 0.51")
 root.minsize(580, 720)
 root.maxsize(600, 770)
 app = Application(root)
