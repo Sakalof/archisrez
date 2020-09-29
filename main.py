@@ -237,7 +237,7 @@ def is_utf16_encoding(file):
 
 root = Tk()
 cur_date = time.time()
-str_time = time.strftime("%d.%m.%Y_%H.%M.%S", time.localtime(cur_date))
+str_time = time.strftime("%Y.%m.%d_%H.%M.%S", time.localtime(cur_date))
 log_filename = f"archisrez_{str_time}.log"
 
 logging.basicConfig(level = logging.DEBUG, filename = log_filename, filemode ="w",

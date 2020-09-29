@@ -6,6 +6,7 @@ import time
 import re
 import binascii
 import logging
+from typing import Dict, Optional
 
 Global_cur_time = time.time()
 Temp_Catalog = os.environ['TEMP'] + '\\archisrez'
@@ -19,7 +20,8 @@ Prefix = str()
 class Str_entry():
 	COPYLOG = None
 	ERRORLOG = None
-	ARC_DICT={}
+	#ARC_DICT: Dict[Optional[str]] = dict()
+	ARC_DICT = dict()
 	GLOBAL_COUNTER = 0
 	UNZIP_OUTPUT = open('zip_output.txt', 'w', encoding = 'utf16')
 	
@@ -50,6 +52,7 @@ class Str_entry():
 		осуществляет копирование файла в указанную папку. При необходимости 
 		разархивирует файл. Процедура верхнего уровня.
 		"""
+		#print("proc copy")
 		self.processed = True
 		if self.is_archived():
 			source_path = self.extract_one_string()
@@ -95,6 +98,7 @@ class Str_entry():
 				logging.debug("dest_path created")
 
 	def is_archived(self):
+		#print("proc is_archived")
 		archived = "|"  in self.abspath
 		archived2 = "/" in self.abspath
 		archived = archived or archived2
@@ -112,6 +116,7 @@ class Str_entry():
 		возникает проблема с архивами. Архив там обозначается не пайпом, а обратным слешем. Поэтому в качестве 
 		костыльного решения попробую пока переделать все бэкслеши в пайпы. Вдруг будет нормально работать
 		"""
+		#print("proc extract_one_string")
 		self.abspath = self.abspath.replace("/","|")
 		ap =self.abspath.split("|")# вначале представляет собой раздробленную по пайпам стрку, 
 		#в конце процедуры представляет набор ссылок на архивы по ходу вложенности
@@ -120,9 +125,8 @@ class Str_entry():
 		for i in range(1, len(ap)):
 			cur_path ="|".join([cur_path,  ap[i]])
 			if dict_flag:
-				get_dic = Str_entry.ARC_DICT.get(cur_path,  0)
-				if get_dic !=0:
-					ap[i] = get_dic
+				if Str_entry.ARC_DICT.get(cur_path):
+					ap[i] = Str_entry.ARC_DICT[cur_path]
 				else:
 					dict_flag = False
 			if not dict_flag:	
@@ -153,7 +157,6 @@ class Str_entry():
 			po = subprocess.Popen(command,  stdout = subprocess.PIPE)
 			listing = po.communicate()[0]
 			listing	= listing.decode("cp866")
-			print(listing)
 			return listing
 
 		def get_hash_of_file_in_archive(archive, un_file):
@@ -169,16 +172,16 @@ class Str_entry():
 		def check_file_crc(path):
 			inp = open(path, "rb").read() 
 			return binascii.crc32(inp)
-	
+		#print("proc new_path")
 		Str_entry.GLOBAL_COUNTER += 1
 		transit_path = os.path.join(Temp_Catalog,  str(Str_entry.GLOBAL_COUNTER)) # промежутчный каталог куда разархивируется файл
 		command = '%s7z.exe x "%s" -y -o"%s" "%s"' %(zip_path,arch, transit_path, fil)
 		#logging.debug(command)
 		os.mkdir(transit_path)
-		po = subprocess.Popen(command,  stdout = subprocess.PIPE)
+		po = subprocess.Popen(command,  stdout = subprocess.PIPE, stdin = subprocess.PIPE)
+		po.stdin.write(b'\n')
 		listing = po.communicate()[0]
 		z7out=listing.decode("cp866")
-		
 		Str_entry.UNZIP_OUTPUT.write(z7out + '\n=====================================cheked\n')
 
 		logging.debug(z7out)
@@ -415,6 +418,14 @@ if __name__ == "__main__":
 	if len(sys.argv) < 3:
 		print("Отсутствуют необходимые аргументы.")
 		sys.exit(1)		
+
+	cur_date = time.time()
+	str_time = time.strftime("%Y.%m.%d_%H.%M.%S", time.localtime(cur_date))
+	log_filename = f"archisrez_{str_time}.log"
+
+	logging.basicConfig(level = logging.DEBUG, filename = log_filename, filemode ="w",
+		 format = "%(asctime)s  %(module)s %(funcName)s : %(message)s")
+
 
 	arch = main_copy(sys.argv[1], sys.argv[2])
 	if arch is None:

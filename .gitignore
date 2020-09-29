@@ -1,0 +1,6 @@
+1
+*.pyc
+*__pycache__
+.mypy_cache
+archisrez_*.log
+zip_output.txt
