@@ -179,6 +179,8 @@ class Str_entry():
 		#logging.debug(command)
 		os.mkdir(transit_path)
 		po = subprocess.Popen(command,  stdout = subprocess.PIPE, stdin = subprocess.PIPE)
+		# этот энтер нужен на случай если архив хапросит пароль. Если его не ставить, выполнение 7z не завершится, 
+		# он так и будет ожидать ввода пароля. Костыльный шаг, но довольно простой.
 		po.stdin.write(b'\n')
 		listing = po.communicate()[0]
 		z7out=listing.decode("cp866")
