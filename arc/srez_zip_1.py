@@ -110,45 +110,60 @@ class Str_entry():
 	def extract_one_string(self):
 		'''
 		Осуществляет разархивирование файла, обрабатывая один или больше вложенных архивов
+		Возвращает путь к разархивированному файлу
 		'''
 		"""
 		Учитывая, что зачастую приходится копировать файлы из списка абсолютных путей ,который был создан в ТОТАЛЕ,
 		возникает проблема с архивами. Архив там обозначается не пайпом, а обратным слешем. Поэтому в качестве 
 		костыльного решения попробую пока переделать все бэкслеши в пайпы. Вдруг будет нормально работать
 		"""
-		#print("proc extract_one_string")
 		self.abspath = self.abspath.replace("/","|")
-		ap =self.abspath.split("|")# вначале представляет собой раздробленную по пайпам стрку, 
+		archive_parts =self.abspath.split("|")# вначале представляет собой раздробленную по пайпам стрку,
 		#в конце процедуры представляет набор ссылок на архивы по ходу вложенности
-		cur_path=ap[0]
+		cur_path=archive_parts[0]
+		# от предыдущих разархивирований может остаться распакованный файл
+		# тут словарь нужен для вложенных архивов. Если часть пути до второго или третьего по вложенности архива есть,
+		# она достается из словаря
 		dict_flag = True
-		for i in range(1, len(ap)):
-			cur_path ="|".join([cur_path,  ap[i]])
+		for i in range(1, len(archive_parts)):
+			# по сути в cur_path формируется ключ для словаря по которому можно будет достать распакованный файл
+			cur_path ="|".join([cur_path,  archive_parts[i]])
 			if dict_flag:
+				# ключ: часть оригинального пути ло следующего архива
+				# значение: путь к распакованному архиву
+				# в начале поиска по архивам всегда проверяется, есть ли путь к разархивированному архиву в словре
+				# если на первом уровне вложенности нет разархивированного архиива, то искать уже нет смысла
+				# поэтому ставим переменную dict_flag в False
 				if Str_entry.ARC_DICT.get(cur_path):
-					ap[i] = Str_entry.ARC_DICT[cur_path]
+					archive_parts[i] = Str_entry.ARC_DICT[cur_path]
 				else:
 					dict_flag = False
-			if not dict_flag:	
-				path = self.new_path(ap[i-1], ap[i])
-				if path  is None:
+			# если переменная dict_flag ==False, распаковаываем следующий файл, находящийся в архиве
+			# и возвращаем путь к нему. При распаковке берутся две части archive_parts[i-1] -путь к распакованному архиву
+			# и archive_parts[i] путь к файлу внутри архива, который еще нужно распаковать.
+			# Почему используется archive_parts[i-1]? Потому что оо модифицируется при успешно разхивировании следующего вложенного архива
+
+			if not dict_flag:	                                    # путь к архиву        путь к файлу в архиве
+				unpacked_arcive_path, path_in_archive = self.new_path(archive_parts[i-1],       archive_parts[i])
+				if unpacked_arcive_path  is None:
 					print("Ошибка распаковки")
 					return None
 				else:
-					ap[i]=os.path.join(path, ap[i])
-					if not ap[i] is ap[-1]:
-						#кроме последней сторки, так как там лежит не архив а 
+					archive_parts[i] = os.path.join(unpacked_arcive_path, path_in_archive)
+					#archive_parts[i]=os.path.join(unpacked_arcive_path, archive_parts[i])
+					if not archive_parts[i] is archive_parts[-1]:
+						#кроме последней сторки, так как там лежит не архив, а
 						#распакованный файл и записвывть его в список архивов бессмысленно
-						Str_entry.ARC_DICT[cur_path]=ap[i]
-			#print("AP\n",  ap)
-		logging.debug("UNZIPPED PATH: %s" % ap[-1])
-		return ap[-1]  # разархивированный конечный файл, кот. надо скопировать
+						Str_entry.ARC_DICT[cur_path]=archive_parts[i]
+			#print("AP\n",  archive_parts)
+		logging.debug("UNZIPPED PATH: %s" % archive_parts[-1])
+		return archive_parts[-1]  # разархивированный конечный файл, кот. надо скопировать
 
 	def new_path(self, arch, fil):
 		'''
-		распаковывает архив в новую папку и ворзвращает местоположение распакованного файла.
-		arch - откуда распаковывать.
-		fil - файл (с промежуточными каталогами) который надо распаковать
+		распаковывает архив в новую папку и возвращает местоположение распакованного файла.
+		arch - путь к архиву, из которого нужно распаковывать содержимое.
+		fil - файл со всеми каталогами внутри архива, из котрого нужно распаковать сам архив не указывается
 		pathn - каталог со случайным именем в который распаковывался файл из архива (возможно с подкаталогами)
 		'''
 
@@ -172,35 +187,45 @@ class Str_entry():
 		def check_file_crc(path):
 			inp = open(path, "rb").read() 
 			return binascii.crc32(inp)
-		#print("proc new_path")
+
+		inner_crc = get_hash_of_file_in_archive(arch, fil)
+		if inner_crc is None:
+			fil = (fil.encode('cp1251')).decode('cp866')
+			inner_crc = get_hash_of_file_in_archive(arch, fil)
+
 		Str_entry.GLOBAL_COUNTER += 1
-		transit_path = os.path.join(Temp_Catalog,  str(Str_entry.GLOBAL_COUNTER)) # промежутчный каталог куда разархивируется файл
-		command = '%s7z.exe x "%s" -y -o"%s" "%s"' %(zip_path,arch, transit_path, fil)
-		#logging.debug(command)
+		# промежутчный каталог куда разархивируется файл
+		transit_path = os.path.join(Temp_Catalog,  str(Str_entry.GLOBAL_COUNTER))
 		os.mkdir(transit_path)
+		# строка, чтобы  распаковывать файл из архива в temp
+		command = f'{zip_path}7z.exe x "{arch}" -y -o"{transit_path}" "{fil}"'
+		#logging.debug(command)
+		# запускаем команду на распаковку файла из архива
 		po = subprocess.Popen(command,  stdout = subprocess.PIPE, stdin = subprocess.PIPE)
-		# этот энтер нужен на случай если архив хапросит пароль. Если его не ставить, выполнение 7z не завершится, 
+		# этот энтер нужен на случай если архив запросит пароль. Если его не ставить, выполнение 7z не завершится,
 		# он так и будет ожидать ввода пароля. Костыльный шаг, но довольно простой.
 		po.stdin.write(b'\n')
+		# смотрим, что выводит архиватор в процессе работы
 		listing = po.communicate()[0]
 		z7out=listing.decode("cp866")
 		Str_entry.UNZIP_OUTPUT.write(z7out + '\n=====================================cheked\n')
 
 		logging.debug(z7out)
+		# должна выводить, если скопировалась корректно
 		if "Everything is Ok" in z7out:
-			return transit_path  
+			return transit_path, fil
 		else:
+
 			pathn = os.path.join(transit_path, fil)
 			
 			if not os.path.exists(pathn):
-				return None
+				return None, None
 			else:
-				inner_crc = get_hash_of_file_in_archive(arch, fil)
 				file_crc = check_file_crc(pathn)
 				if	inner_crc == file_crc:
-					return transit_path
+					return transit_path, fil
 				else:
-					return None
+					return None, None
 						
 		
 		
