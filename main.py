@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter.ttk import Progressbar
 from tkinter.filedialog import askopenfilename, askopenfilenames, askdirectory
 import logging
 import os
@@ -82,6 +83,16 @@ class Srez():
 		self.gu.gui_dir.set_var(os.path.normpath(askdirectory()))
 
 	def copy_files(self, event=None):
+
+		prog_bar_window = Toplevel()
+		prog_bar_window.overrideredirect(1)
+		#prog_bar_window.wm_attributes('-fullscreen', 'true')
+		prog_bar_window.geometry("410x100")
+		pbl = Label(prog_bar_window, text = 'Прогресс копирования файлов.')
+		pbl.pack(side = TOP)
+		pb = Progressbar(prog_bar_window , orient=HORIZONTAL, length=300, mode='determinate')
+		pb.pack(side = TOP, expand = YES, fill = BOTH)
+
 		logging.debug("File copying Started")
 		self.mother.display("Подготовка каталогов для копирования...", star=False)
 		copylog, errlog = srz.init_logs(self.gu.gui_file.get_var(), self.gu.gui_dir.get_var())
@@ -103,11 +114,19 @@ class Srez():
 		self.mother.display("Копирование файлов...", star=False)
 		all_lines = len(arch)
 		entry_count = 0
+		pb['value'] = 0
+		prog_bar_window.update()
 		for entry in arch:
 			entry_count+=1
 			entry.copy()
+			prog_float = int(entry_count/all_lines*100)
+			pb['value'] = prog_float
+			pbl.config(text=f'{entry_count}/{all_lines}')
+			prog_bar_window.update()
 			entry.write_log()
-		
+		prog_bar_window.destroy()
+
+
 		srz.close_logs(copylog, errlog)
 
 		success_lines = error_lines = processed_lines = 0
@@ -247,7 +266,7 @@ logging.debug("="*60)
 #logging.debug(time.strftime("%d.%m.%Y %H:%M:%S", time.localtime(cur_date)))
 logging.debug("Program Started")
 #print("Самый верх: ", root)
-root.title("Архисрез 0.53")
+root.title("Архисрез 0.54")
 root.minsize(580, 720)
 root.maxsize(600, 770)
 app = Application(root)

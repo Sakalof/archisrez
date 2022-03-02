@@ -32,11 +32,6 @@ class Str_entry():
 			self.filename = a[Str_entry.H_NAME]
 			self.abspath = a[Str_entry.H_PATH].rstrip() + a[Str_entry.H_NAME].rstrip()
 		else:
-			#print("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-")
-			#print(a)
-			#print(len(a))
-			#print(Str_entry.H_ABSPATH)
-			#print(a[Str_entry.H_ABSPATH])
 			self.filename = os.path.basename(a[Str_entry.H_ABSPATH])
 			self.abspath = a[Str_entry.H_ABSPATH].strip()
 		if Str_entry.H_KEY is not None:
@@ -189,10 +184,17 @@ class Str_entry():
 			return binascii.crc32(inp)
 
 		inner_crc = get_hash_of_file_in_archive(arch, fil)
+		print('ОШИБКА ФАЙЛА')
 		if inner_crc is None:
-			fil = (fil.encode('cp1251')).decode('cp866')
+			try:
+				fil = (fil.encode('cp1251')).decode('cp866')
+			except:
+				try:
+					fil = (fil.encode('cp1251')).decode('cp866')
+				except:
+					pass
 			inner_crc = get_hash_of_file_in_archive(arch, fil)
-
+		print('ОШИБКА ФАЙЛА В АРХИВЕ - НЕИЗВЕСТНАЯ КОНТРОЛЬНАЯ СУММА (КОДИРОВКА)')
 		Str_entry.GLOBAL_COUNTER += 1
 		# промежутчный каталог куда разархивируется файл
 		transit_path = os.path.join(Temp_Catalog,  str(Str_entry.GLOBAL_COUNTER))
