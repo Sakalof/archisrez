@@ -9,10 +9,10 @@ import time
 cw = os.getcwd()
 sys.path.append(cw + "\\z")
 
-from arc import agregator_01 as agr
-from arc import file_otchet_1 as otch
-from arc import srez_zip_1 as srz
-from arc import arch_gui_1 as gui
+from arc import agregator
+from arc import report
+from arc import srez
+from arc import gui
 
 
 class Argegat():
@@ -42,7 +42,7 @@ class Argegat():
 		Делается это до запуска объединения. В смотрит заголовки файлов, опрелеляет, подойдут они или нет 
 		"""
 		self.mother.output_directory = self.gu.ebun.get_var()
-		self.wof = agr.Work_Files(os.path.normpath(self.gu.ebun.get_var()))
+		self.wof = agregator.Work_Files(os.path.normpath(self.gu.ebun.get_var()))
 		if len(self.wof.workfiles) > 0:
 			self.display_working_files() #показывает список файлов, которые будут объединяться в один
 			self.gu.unlock_exec_button() #разблокирует кнопку запуска объединения
@@ -95,22 +95,22 @@ class Srez():
 
 		logging.debug("File copying Started")
 		self.mother.display("Подготовка каталогов для копирования...", star=False)
-		copylog, errlog = srz.init_logs(self.gu.gui_file.get_var(), self.gu.gui_dir.get_var())
-		srz.prepare_logs(copylog, errlog)
-		prep_err = srz.prepare_catalogs()
+		copylog, errlog = srez.init_logs(self.gu.gui_file.get_var(), self.gu.gui_dir.get_var())
+		srez.prepare_logs(copylog, errlog)
+		prep_err = srez.prepare_catalogs()
 		if not prep_err:
 			self.mother.display("Файлы не копировались из-за ошибки инициализации каталогов.")
-			srz.close_logs(copylog, errlog)
+			srez.close_logs(copylog, errlog)
 			return
 		self.mother.display("Подготовлены.")
 		
 		if not is_utf16_encoding(self.gu.gui_file.get_var()):
 			self.mother.display("Файл имеет неверную кодировку (не UTF-16).")
 			return
-		if not srz.is_valid_format(self.gu.gui_file.get_var()):
+		if not srez.is_valid_format(self.gu.gui_file.get_var()):
 			self.mother.display("Файл имеет неверный формат.")
 			return
-		arch = srz.init_from_utf16_file_list(self.gu.gui_file.get_var())
+		arch = srez.init_from_utf16_file_list(self.gu.gui_file.get_var())
 		self.mother.display("Копирование файлов...", star=False)
 		all_lines = len(arch)
 		entry_count = 0
@@ -127,7 +127,7 @@ class Srez():
 		prog_bar_window.destroy()
 
 
-		srz.close_logs(copylog, errlog)
+		srez.close_logs(copylog, errlog)
 
 		success_lines = error_lines = processed_lines = 0
 		for i in arch:
@@ -143,8 +143,8 @@ class Srez():
 		s = "Обработано файлов: %d.\nУдачно скопировано: %d.\nОшибок копирования: %d.\n" \
 		% (processed_lines, success_lines, error_lines)
 		self.mother.display(s)
-		cl = os.path.abspath(srz.Str_entry.COPYLOG.__getattribute__("name"))
-		el = os.path.abspath(srz.Str_entry.ERRORLOG.__getattribute__("name"))
+		cl = os.path.abspath(srez.Str_entry.COPYLOG.__getattribute__("name"))
+		el = os.path.abspath(srez.Str_entry.ERRORLOG.__getattribute__("name"))
 		self.mother.display("Журнал скопиорванных файлов: " + cl, star = False)
 		self.mother.display("Журнал ошибок: " + el)
 		# self.mother.f_rp.copylog = cl
@@ -222,10 +222,10 @@ class Report():
 		relative = paths[2]
 		otchet_path = dest[:dest.index(relative)]
 		return os.path.normpath(otchet_path)
-	
+
 
 	def make_otchet(self, event = None):
-		otch.create_all(self.gu.gui_file.get_var(), self.gu.gui_dir.get_var())
+		report.create_all(self.gu.gui_file.get_var(), self.gu.gui_dir.get_var())
 		self.mother.display("Создан отчет по скопированным файлам.")
 
 class Application():

@@ -1,7 +1,7 @@
 import os
 from tkinter import *
 from tkinter.filedialog import askopenfilename, askopenfilenames, askdirectory
-from . import archisrez_help_01 as ahlp
+from arc import help
 
 class HelpButton():
 	def __init__(self, app):
@@ -21,7 +21,7 @@ class HelpButton():
 		he.config(yscrollcommand = scroller.set)
 		he.pack(side = LEFT, expand = YES, fill = BOTH)
 		scroller.pack(side = RIGHT, expand = YES, fill = Y)
-		he.insert("1.0", ahlp.help_text)	
+		he.insert("1.0", help.help_text)
 		he.config(state = DISABLED)		
 		help_win.focus_set()
 		he.focus()

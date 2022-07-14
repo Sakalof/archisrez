@@ -1,6 +1,6 @@
 ﻿import sys
 import os
-from . import html_parts
+from arc import html_parts
 
 class TetraGrammaKeyword():
 	def __init__(self, all_words, workfiles):

@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f868749c-7c8f-470f-a2d5-820f688088e7" name="Default Changelist" comment="Исравил ошибку, когла архивариус неправильно определял кодировку пути внутри архива и файлы с кириллическими именами из-за этого не копировались.">
+    <list default="true" id="f868749c-7c8f-470f-a2d5-820f688088e7" name="Default Changelist" comment="Добавил прогресс бар при копировании файлов.">
+      <change afterPath="$PROJECT_DIR$/arc/logs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/progect.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/progect.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/agregator_01.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/agregator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/arch_gui_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/archisrez_help_01.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/help.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/arc/changelog.txt" beforeDir="false" afterPath="$PROJECT_DIR$/arc/changelog.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arc/srez_zip_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/srez_zip_1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/file_otchet_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/srez_zip_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/srez.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,9 +53,9 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
-  <component name="RunManager" selected="Python.srez_zip_1">
+  <component name="RunManager" selected="Python.main">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="progect" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -75,7 +89,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/arc/agregator_01.py" />
+      <option name="SCRIPT_NAME" value="D:\pyprog\archisrez\progect\arc\agregator.py" />
       <option name="PARAMETERS" value="&quot;D:\таран проверка\пример&quot;" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -105,7 +119,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="srez_zip_1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="srez" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="progect" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -117,7 +131,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/arc/srez_zip_1.py" />
+      <option name="SCRIPT_NAME" value="D:\pyprog\archisrez\progect\arc\srez.py" />
       <option name="PARAMETERS" value="&quot;D:\pyprog\archisrez\разархивирование\путь_с_двумя_вложениями.txt&quot; &quot;D:\pyprog\archisrez\сломанные пути в архивах\для_скопировааного&quot;" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -133,8 +147,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.srez_zip_1" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.srez_zip_1" />
         <item itemvalue="Python.agregator_01" />
       </list>
     </recent_temporary>
@@ -172,7 +186,14 @@
       <option name="project" value="LOCAL" />
       <updated>1638961478635</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Добавил прогресс бар при копировании файлов.">
+      <created>1646221000936</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1646221000936</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -203,19 +224,15 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Исправил баг с вылетом, если в последнем столбце списка имеется пустое значение." />
     <MESSAGE value="Исравил ошибку, когла архивариус неправильно определял кодировку пути внутри архива и файлы с кириллическими именами из-за этого не копировались." />
-    <option name="LAST_COMMIT_MESSAGE" value="Исравил ошибку, когла архивариус неправильно определял кодировку пути внутри архива и файлы с кириллическими именами из-за этого не копировались." />
+    <MESSAGE value="Добавил прогресс бар при копировании файлов." />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавил прогресс бар при копировании файлов." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/arc/file_otchet_1.py</url>
+          <url>file://$PROJECT_DIR$/arc/report.py</url>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/arc/srez_zip_1.py</url>
-          <line>114</line>
-          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

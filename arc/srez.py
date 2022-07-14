@@ -37,7 +37,6 @@ class Str_entry():
 		if Str_entry.H_KEY is not None:
 			self.keystring = a[Str_entry.H_KEY].strip()
 		else:
-			#self.keystring = None
 			self.keystring = ""
 		self.copied = False
 		self.processed = False
@@ -398,7 +397,6 @@ def init_logs(srez_file, srez_dir, custom_log=False):
 	print("srez_file: ", srez_file)
 	Prefix = "\\\\?\\" + srez_dir
 	pth = os.path.dirname(srez_file)
-	sf = os.path.dirname(srez_file)
 	elog = "error"
 	clog = "copy"
 	if custom_log is True:
@@ -442,6 +440,9 @@ def main_copy(srez_file, srez_dir):
 	copy_all_files(arch_str)
 	close_logs(copylog, errlog)
 	return arch_str
+
+
+
 
 if __name__ == "__main__":
 	if len(sys.argv) < 3:
