@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f868749c-7c8f-470f-a2d5-820f688088e7" name="Default Changelist" comment="Добавил прогресс бар при копировании файлов.">
-      <change afterPath="$PROJECT_DIR$/arc/logs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/progect.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/progect.iml" afterDir="false" />
+    <list default="true" id="f868749c-7c8f-470f-a2d5-820f688088e7" name="Default Changelist" comment="Рефакторинг названий модулей">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arc/agregator_01.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/agregator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arc/arch_gui_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arc/archisrez_help_01.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/help.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/arc/changelog.txt" beforeDir="false" afterPath="$PROJECT_DIR$/arc/changelog.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arc/file_otchet_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arc/srez_zip_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/srez.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/srez.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/srez.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -29,6 +24,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="SET_USER_NAME_GLOBALLY" value="false" />
+  </component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="aec5cbe1-ec64-4b4f-ba06-229305380f72" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -52,8 +50,9 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="ToolWindowCommit.ShowToolbar" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
   </component>
   <component name="RunManager" selected="Python.main">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -141,14 +140,13 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.srez" />
       <item itemvalue="Python.agregator_01" />
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.srez_zip_1" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.srez_zip_1" />
         <item itemvalue="Python.agregator_01" />
       </list>
     </recent_temporary>
@@ -193,7 +191,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646221000936</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Рефакторинг названий модулей">
+      <created>1657775695047</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1657775695047</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -225,7 +230,8 @@
     <MESSAGE value="Исправил баг с вылетом, если в последнем столбце списка имеется пустое значение." />
     <MESSAGE value="Исравил ошибку, когла архивариус неправильно определял кодировку пути внутри архива и файлы с кириллическими именами из-за этого не копировались." />
     <MESSAGE value="Добавил прогресс бар при копировании файлов." />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавил прогресс бар при копировании файлов." />
+    <MESSAGE value="Рефакторинг названий модулей" />
+    <option name="LAST_COMMIT_MESSAGE" value="Рефакторинг названий модулей" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

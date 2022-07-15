@@ -1,5 +1,5 @@
 ﻿help_text = '''02.03.2022
-v 0.54
+v 0.55
 Автор: Соколов Дмитрий
 mail: sakalof@mail.ru
 Telegram: @sakalof

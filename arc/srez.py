@@ -6,7 +6,8 @@ import time
 import re
 import binascii
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, TextIO
+
 
 Global_cur_time = time.time()
 Temp_Catalog = os.environ['TEMP'] + '\\archisrez'
@@ -277,26 +278,31 @@ class Str_entry():
 			Str_entry.ERRORLOG.write(self.abspath + "\n")
 
 
-def init_from_utf16_file_list(path):
-	# проверяем что файл содержит списик ключевых фраз
-	# грубо говоря просто считает количество столбцов
-	assert os.path.exists(path), "Файл  со списком путей не обнаружен"
-	strings=[]
-	for file in open(path, "r", encoding = "utf16").readlines():
-		strings.append(Str_entry(file.rstrip()))
-	return strings
+def init_from_utf16_file_list(path: str, utf_encoding: str) -> list[Str_entry]:
+	file_records=[]
+	for file in open(path, "r", encoding = utf_encoding).readlines():
+		file_records.append(Str_entry(file.rstrip()))
+	return file_records
 
 
-def is_utf16_encoding(file):
-	try:
-		open(file, "r", encoding = "utf_16").readline()
-	except UnicodeError:
-		return False
-	else:
-		return True
+def get_unicode_encoding(file: str) -> Optional[str]:
+	e = None
+	for enc in ['utf-8-sig', 'utf-16']:
+		t = open(file, 'r', encoding=enc)
+		try:
+			t.readline()
+		except UnicodeDecodeError:
+			print('Ошибка кодировки', enc)
+			pass
+		else:
+			e = enc
+			break
+		finally:
+			t.close()
+	return e
 
-def is_valid_format(file):
-	header_str=open(file, "r", encoding = "utf_16").readline()
+def is_valid_format(file: str, encoding: str):
+	header_str=open(file, "r", encoding = encoding).readline()
 	header_str = header_str.rstrip()
 
 	tit_list=["полный путь","папка", "имя файла", "ключевые фразы"]
@@ -427,15 +433,16 @@ def main_copy(srez_file, srez_dir):
 		return None
 	print("Рабочие каталоги подготовлены.")
 
-	if not is_utf16_encoding(srez_file):
-		print("Файл имеет неверную кодировку (не UTF-16).")
+	encoding = get_unicode_encoding(srez_file)
+	if encoding is None:
+		print("Файл имеет неверную кодировку (не Юникод).")
 		return None
 
-	if not is_valid_format(srez_file):
+	if not is_valid_format(srez_file, encoding):
 		print("Файл имеет неверный формат.")
 		return None
 
-	arch_str = init_from_utf16_file_list(srez_file)
+	arch_str = init_from_utf16_file_list(srez_file, encoding)
 	print('Осуществляется копирование файлов...')
 	copy_all_files(arch_str)
 	close_logs(copylog, errlog)

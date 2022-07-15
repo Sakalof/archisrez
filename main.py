@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter.ttk import Progressbar
-from tkinter.filedialog import askopenfilename, askopenfilenames, askdirectory
+from tkinter.filedialog import askopenfilename, askdirectory
 import logging
 import os
 import os.path
@@ -84,8 +84,8 @@ class Srez():
 
 	def copy_files(self, event=None):
 
-		prog_bar_window = Toplevel()
-		prog_bar_window.overrideredirect(1)
+		prog_bar_window = Toplevel() # создание прогресс бара
+		prog_bar_window.overrideredirect(True) # убирание у прогресс бара возможности закрыться (крестик убираем)
 		#prog_bar_window.wm_attributes('-fullscreen', 'true')
 		prog_bar_window.geometry("410x100")
 		pbl = Label(prog_bar_window, text = 'Прогресс копирования файлов.')
@@ -101,16 +101,24 @@ class Srez():
 		if not prep_err:
 			self.mother.display("Файлы не копировались из-за ошибки инициализации каталогов.")
 			srez.close_logs(copylog, errlog)
+			# не просто ретурн возвращать, а код ошибки
+			# а ошибку в дисплее выводить отдельно
 			return
+
 		self.mother.display("Подготовлены.")
-		
-		if not is_utf16_encoding(self.gu.gui_file.get_var()):
-			self.mother.display("Файл имеет неверную кодировку (не UTF-16).")
+		# определяем кодировку файла среза
+		srez_file_encoding = srez.get_unicode_encoding(self.gu.gui_file.get_var())
+		if srez_file_encoding is None:
+			self.mother.display("Файл имеет неверную кодировку (не Юникод).")
+			# не просто ретурн возвращать, а код ошибки
+			# а ошибку в дисплее выводить отдельно
 			return
-		if not srez.is_valid_format(self.gu.gui_file.get_var()):
+		# определяем, что файл среза имеет верный формат
+		if not srez.is_valid_format(self.gu.gui_file.get_var(), srez_file_encoding):
 			self.mother.display("Файл имеет неверный формат.")
 			return
-		arch = srez.init_from_utf16_file_list(self.gu.gui_file.get_var())
+		# создаем список объектов (файлов) для копирования
+		arch = srez.init_from_utf16_file_list(self.gu.gui_file.get_var(), srez_file_encoding)
 		self.mother.display("Копирование файлов...", star=False)
 		all_lines = len(arch)
 		entry_count = 0
@@ -245,15 +253,6 @@ class Application():
 			self.f_di.add_info("-"*50)
 
 
-def is_utf16_encoding(file):
-	unicode_enc = True
-	try:
-		open(file, "r", encoding = "utf_16").readline()
-	except UnicodeError:
-		unicode_enc = False
-	return unicode_enc
-
-
 root = Tk()
 cur_date = time.time()
 str_time = time.strftime("%Y.%m.%d_%H.%M.%S", time.localtime(cur_date))
@@ -266,7 +265,7 @@ logging.debug("="*60)
 #logging.debug(time.strftime("%d.%m.%Y %H:%M:%S", time.localtime(cur_date)))
 logging.debug("Program Started")
 #print("Самый верх: ", root)
-root.title("Архисрез 0.54")
+root.title("Архисрез 0.55")
 root.minsize(580, 720)
 root.maxsize(600, 770)
 app = Application(root)
