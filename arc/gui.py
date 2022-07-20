@@ -58,22 +58,19 @@ class EnButt():
 		return self.entry_var.get()
 		
 
-class Agr_Gui():# панелька, ответственная за объединение срезов
-	def __init__(self, parent, root): #parent - Tk();  root - Agregator
-		self.father = root
-		print("parent: ", parent)
-		self.agrgui = Frame(parent, relief=GROOVE, 
-			borderwidth = 4, width = 800, padx = 10, pady = 10, height = 400) # область интерфейса агрегатора
-		self.agrgui.pack(side = TOP)
-		self.lab = Label(self.agrgui, width=80, height = 2,  
-			text ="1. Слияние списков Архивариус 3000.", anchor = NW) 
-		self.lab.pack()
-		self.fr = Frame(self.agrgui,padx = 5, pady = 5) # область для помещения текстового поля с кнопкой
+class Aggr_Gui():# панелька, ответственная за объединение срезов
+	def __init__(self, app):
+		self.app = app
+		self.agrfame = Frame(self.app, relief=GROOVE,
+							 borderwidth = 4, width = 800, padx = 10, pady = 10, height = 400) # область интерфейса агрегатора
+		self.agrfame.pack(side = TOP)
+		label_text = "1. Слияние списков Архивариус 3000."
+		Label(self.agrfame, width=80, height = 2, text =label_text, anchor = NW).pack()
+		self.fr = Frame(self.agrfame, padx = 5, pady = 5) # область для помещения текстового поля с кнопкой
 		self.fr.pack(side = TOP, expand = YES, fill = X)	
 		
 		self.ebun = EnButt(self.fr, "Каталог со списками архивариуса.", None) # комбо: текстовое поле с кнопкой
-		print("TOP: ", self.father.mother)
-		self.exec_but = Button(self.agrgui, text = "Выполнить", state = DISABLED) # кнопка запуска
+		self.exec_but = Button(self.agrfame, text ="Выполнить", state = DISABLED) # кнопка запуска
 		self.exec_but.pack()
 
 	# привязка функций к виджетам
@@ -82,7 +79,7 @@ class Agr_Gui():# панелька, ответственная за объеди
 	def bind_functions(self, butt_func, ent_func, exec_butt_func):
 		def exec_func_mod(event = None):
 			exec_butt_func()
-			self.father.mother.f_sr.gu.gui_dir.entry.focus()
+			self.app.interf_srez.gu.gui_dir.entry.focus()
 
 		self.ebun.set_function(butt_func, ent_func)
 		self.exec_but.config(command = exec_func_mod)
@@ -98,21 +95,22 @@ class Agr_Gui():# панелька, ответственная за объеди
 
 
 class Srez_Gui():
-	def __init__(self, parent, root): #parent - Tk();  root - Srez()
-		self.father = root
-		self.srezgui = Frame(parent, relief=GROOVE, 
-				borderwidth = 4, width = 700,  padx = 10, pady = 10, 
-				height = 400)
-		self.srezgui.pack(side = TOP)
-		self.lb = Label(self.srezgui, width=80, height = 2, text = "2. Копирование файлов.", anchor = NW)
-		self.lb.pack(side = TOP, expand = YES, fill = X)
-		self.fr1 = Frame(self.srezgui ,padx = 5, pady = 5)
+	def __init__(self, app):
+		self.app = app
+		self.srezframe = Frame(self.app, relief=GROOVE,
+							   borderwidth = 4, width = 700, padx = 10, pady = 10,
+							   height = 400)
+		self.srezframe.pack(side = TOP)
+		lt =  "2. Копирование файлов."
+		Label(self.srezframe, width=80, height = 2, text = lt, anchor = NW).pack(side = TOP, expand = YES, fill = X)
+
+		self.fr1 = Frame(self.srezframe, padx = 5, pady = 5)
 		self.fr1.pack(side = TOP, expand = YES, fill = X)
-		self.fr2 = Frame(self.srezgui,  padx = 5, pady = 5)
+		self.fr2 = Frame(self.srezframe, padx = 5, pady = 5)
 		self.fr2.pack(side = TOP, expand = YES, fill = X)
 		self.gui_file = EnButt(self.fr1, "Список файлов для копирования.", None)
 		self.gui_dir = EnButt(self.fr2, "Каталог для копирования.", None)
-		self.srez_exec = Button(self.srezgui, text = "Выполнить", state = DISABLED, command = None)
+		self.srez_exec = Button(self.srezframe, text ="Выполнить", state = DISABLED)
 		self.srez_exec.pack(side = TOP)
 		self.ready_to_execute()
 
@@ -131,7 +129,7 @@ class Srez_Gui():
 				self.gui_file.entry.focus()
 		def exec_func_mod(event = None):
 			exec_butt_func()
-			self.father.mother.f_rp.gu.otchet_go.focus()
+			self.app.interf_report.gu.otchet_go.focus()
 
 		self.gui_file.set_function(file_butt_func, ent_func_file)
 		self.gui_dir.set_function(dir_butt_func, ent_func_dir)
@@ -141,7 +139,6 @@ class Srez_Gui():
 
 	def unlock_exec_button(self):
 		self.srez_exec.config(state = NORMAL)
-		#self.srez_exec.focus()
 
 	def lock_exec_button(self):
 		self.srez_exec.config(state = DISABLED)
@@ -157,28 +154,28 @@ class Srez_Gui():
 			self.unlock_exec_button()
 		else:
 			self.lock_exec_button()
-		self.srezgui.after(200, self.ready_to_execute)
+		self.srezframe.after(200, self.ready_to_execute)
 
 
 class Report_Gui():
-	def __init__(self, parent, root): #parent - Tk();  root - Raport()
-		self.father = root
-		self.repgui = Frame(parent, relief=GROOVE, 
-				borderwidth = 4, width = 700,  padx = 10, pady = 10, 
-				height = 400)
-		self.repgui.pack(side = TOP)
+	def __init__(self, app): #parent - Tk();  root - Raport()
+		self.app = app
+		self.repframe = Frame(self.app, relief=GROOVE,
+							  borderwidth = 4, width = 700, padx = 10, pady = 10,
+							  height = 400)
+		self.repframe.pack(side = TOP)
 
-		self.lb = Label(self.repgui, width=80, height = 2, text = "3. Формирование HTML-отчета о копировании.", anchor = NW)
+		self.lb = Label(self.repframe, width=80, height = 2, text ="3. Формирование HTML-отчета о копировании.", anchor = NW)
 		self.lb.pack(side = TOP, expand = YES, fill = X)
-		self.fr1 = Frame(self.repgui,padx = 5, pady = 5)
+		self.fr1 = Frame(self.repframe, padx = 5, pady = 5)
 		self.fr1.pack(side = TOP, expand = YES, fill = X)
-		self.fr2 = Frame(self.repgui,padx = 5, pady = 5)
+		self.fr2 = Frame(self.repframe, padx = 5, pady = 5)
 		self.fr2.pack(side = TOP, expand = YES, fill = X)
 		self.gui_file = EnButt(self.fr1, "Файл с отчетом о копировании файлов.")
 		self.gui_dir = EnButt(self.fr2, "Каталог со скопированными файлами.")
 		
-		self.otchet_go = Button(self.repgui, text = "Выполнить", state = DISABLED, 
-			command = None)
+		self.otchet_go = Button(self.repframe, text ="Выполнить", state = DISABLED,
+								command = None)
 		self.otchet_go.pack(side = TOP)
 		self.ready_to_execute()
 
@@ -225,7 +222,7 @@ class Report_Gui():
 			self.unlock_exec_button()
 		else:
 			self.lock_exec_button()
-		self.repgui.after(200, self.ready_to_execute)
+		self.repframe.after(200, self.ready_to_execute)
 
 class Display_Gui():
 	def __init__(self, parent): #parent - Tk(); 

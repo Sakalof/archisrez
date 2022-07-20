@@ -5,7 +5,6 @@ import subprocess
 import time
 import re
 import binascii
-import logging
 from typing import Dict, Optional, TextIO
 
 
@@ -13,15 +12,16 @@ Global_cur_time = time.time()
 Temp_Catalog = os.environ['TEMP'] + '\\archisrez'
 if __name__ == '__main__':
 	zip_path = '../z/'
+	from . import LOGGER
 else: 
 	zip_path = './z/'
+	from arc import LOGGER
 
-Prefix = str() 
+Prefix = str() # зачем она так объявлена, зачем она вообще на глобальном уровне существует?
 
 class Str_entry():
 	COPYLOG = None
 	ERRORLOG = None
-	#ARC_DICT: Dict[Optional[str]] = dict()
 	ARC_DICT = dict()
 	GLOBAL_COUNTER = 0
 	UNZIP_OUTPUT = open('zip_output.txt', 'w', encoding = 'utf16')
@@ -57,13 +57,13 @@ class Str_entry():
 		else:
 			source_path = self.abspath
 			dest = self.abspath
-		logging.debug(source_path)
+		LOGGER.debug(source_path)
 		# Удолит эту отладочную информацию
 		if not os.path.exists(source_path):
-			logging.debug("file not found")
+			LOGGER.debug("file not found")
 		#-------------------------------------------
 		if os.path.exists(source_path):
-			logging.debug("path exists")
+			LOGGER.debug("path exists")
 			self.dest_path, self.relative_path = self.get_dest_dir(dest)
 			self.make_dest_dir()
 			if self.copy_file(source_path, self.dest_path):
@@ -83,23 +83,23 @@ class Str_entry():
 	
 	def make_dest_dir(self):
 		if not os.path.exists(self.dest_path):
-			logging.debug(self.dest_path)
+			LOGGER.debug(self.dest_path)
 			try:
 				os.makedirs(self.dest_path)
 			except Exception as erka:
 				print("Ошибка создания каталога %" % self.dest_path)
-				logging.debug("ERROR CREATED DEST PATH" + str(erka))
+				LOGGER.debug("ERROR CREATED DEST PATH" + str(erka))
 			else:
-				logging.debug("dest_path created")
+				LOGGER.debug("dest_path created")
 
 	def is_archived(self):
 		#print("proc is_archived")
 		archived = "|"  in self.abspath
 		archived2 = "/" in self.abspath
 		archived = archived or archived2
-		logging.debug(self.abspath)
+		LOGGER.debug(self.abspath)
 		if archived:
-			logging.debug("file is archived")
+			LOGGER.debug("file is archived")
 		return archived
 
 	def extract_one_string(self):
@@ -151,7 +151,7 @@ class Str_entry():
 						#распакованный файл и записвывть его в список архивов бессмысленно
 						Str_entry.ARC_DICT[cur_path]=archive_parts[i]
 			#print("AP\n",  archive_parts)
-		logging.debug("UNZIPPED PATH: %s" % archive_parts[-1])
+		LOGGER.debug("UNZIPPED PATH: %s" % archive_parts[-1])
 		return archive_parts[-1]  # разархивированный конечный файл, кот. надо скопировать
 
 	def new_path(self, arch, fil):
@@ -201,7 +201,7 @@ class Str_entry():
 		os.mkdir(transit_path)
 		# строка, чтобы  распаковывать файл из архива в temp
 		command = f'{zip_path}7z.exe x "{arch}" -y -o"{transit_path}" "{fil}"'
-		#logging.debug(command)
+		#LOGGER.debug(command)
 		# запускаем команду на распаковку файла из архива
 		po = subprocess.Popen(command,  stdout = subprocess.PIPE, stdin = subprocess.PIPE)
 		# этот энтер нужен на случай если архив запросит пароль. Если его не ставить, выполнение 7z не завершится,
@@ -212,7 +212,7 @@ class Str_entry():
 		z7out=listing.decode("cp866")
 		Str_entry.UNZIP_OUTPUT.write(z7out + '\n=====================================cheked\n')
 
-		logging.debug(z7out)
+		LOGGER.debug(z7out)
 		# должна выводить, если скопировалась корректно
 		if "Everything is Ok" in z7out:
 			return transit_path, fil
@@ -292,7 +292,6 @@ def get_unicode_encoding(file: str) -> Optional[str]:
 		try:
 			t.readline()
 		except UnicodeDecodeError:
-			print('Ошибка кодировки', enc)
 			pass
 		else:
 			e = enc
@@ -455,14 +454,6 @@ if __name__ == "__main__":
 	if len(sys.argv) < 3:
 		print("Отсутствуют необходимые аргументы.")
 		sys.exit(1)		
-
-	cur_date = time.time()
-	str_time = time.strftime("%Y.%m.%d_%H.%M.%S", time.localtime(cur_date))
-	log_filename = f"archisrez_{str_time}.log"
-
-	logging.basicConfig(level = logging.DEBUG, filename = log_filename, filemode ="w",
-		 format = "%(asctime)s  %(module)s %(funcName)s : %(message)s")
-
 
 	arch = main_copy(sys.argv[1], sys.argv[2])
 	if arch is None:

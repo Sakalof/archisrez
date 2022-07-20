@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f868749c-7c8f-470f-a2d5-820f688088e7" name="Default Changelist" comment="Рефакторинг названий модулей">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="f868749c-7c8f-470f-a2d5-820f688088e7" name="Default Changelist" comment="Вместо определения utf-16 теперь определяет кодировку Юникод.">
+      <change afterPath="$PROJECT_DIR$/arc/mainlog.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/arc/changelog.txt" beforeDir="false" afterPath="$PROJECT_DIR$/arc/changelog.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/arc/srez.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/srez.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -198,7 +199,14 @@
       <option name="project" value="LOCAL" />
       <updated>1657775695047</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Вместо определения utf-16 теперь определяет кодировку Юникод.">
+      <created>1657876004203</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1657876004203</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -231,7 +239,8 @@
     <MESSAGE value="Исравил ошибку, когла архивариус неправильно определял кодировку пути внутри архива и файлы с кириллическими именами из-за этого не копировались." />
     <MESSAGE value="Добавил прогресс бар при копировании файлов." />
     <MESSAGE value="Рефакторинг названий модулей" />
-    <option name="LAST_COMMIT_MESSAGE" value="Рефакторинг названий модулей" />
+    <MESSAGE value="Вместо определения utf-16 теперь определяет кодировку Юникод." />
+    <option name="LAST_COMMIT_MESSAGE" value="Вместо определения utf-16 теперь определяет кодировку Юникод." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
