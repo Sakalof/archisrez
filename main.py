@@ -80,15 +80,6 @@ class Srez():
 
 	def copy_files(self, event=None):
 
-		prog_bar_window = Toplevel() # создание прогресс бара
-		prog_bar_window.overrideredirect(True) # убирание у прогресс бара возможности закрыться (крестик убираем)
-		#prog_bar_window.wm_attributes('-fullscreen', 'true')
-		prog_bar_window.geometry("410x100")
-		pbl = Label(prog_bar_window, text = 'Прогресс копирования файлов.')
-		pbl.pack(side = TOP)
-		pb = Progressbar(prog_bar_window , orient=HORIZONTAL, length=300, mode='determinate')
-		pb.pack(side = TOP, expand = YES, fill = BOTH)
-
 		self.app.logger.debug("File copying Started")
 		self.app.display("Подготовка каталогов для копирования...", star=False)
 		copylog, errlog = srez.init_logs(self.gu.gui_file.get_var(), self.gu.gui_dir.get_var())
@@ -116,20 +107,16 @@ class Srez():
 		# создаем список объектов (файлов) для копирования
 		arch = srez.init_from_utf16_file_list(self.gu.gui_file.get_var(), srez_file_encoding)
 		self.app.display("Копирование файлов...", star=False)
-		all_lines = len(arch)
+
 		entry_count = 0
-		pb['value'] = 0
-		prog_bar_window.update()
+		all_lines = len(arch)
+		self.prog_bar = gui.SrezProgBar(all_lines)
 		for entry in arch:
 			entry_count+=1
 			entry.copy()
-			prog_float = int(entry_count/all_lines*100)
-			pb['value'] = prog_float
-			pbl.config(text=f'{entry_count}/{all_lines}')
-			prog_bar_window.update()
+			self.prog_bar.show_progress(entry_count)
 			entry.write_log()
-		prog_bar_window.destroy()
-
+		self.prog_bar.destroy()
 
 		srez.close_logs(copylog, errlog)
 
@@ -234,7 +221,7 @@ class Report():
 class Application(Tk):
 	def __init__(self):
 		super().__init__()
-		self.title("Архисрез 0.55")
+		self.title("Архисрез 0.56")
 		self.minsize(580, 720)
 		self.maxsize(600, 770)
 		self.logger = LOGGER
@@ -256,5 +243,7 @@ class Application(Tk):
 			self.interf_display.add_info("-" * 50)
 
 
+print(globals())
+print(globals()['__version__'])
 app = Application()
 app.mainloop()

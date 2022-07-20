@@ -1,9 +1,10 @@
 import os
 from tkinter import *
+from tkinter.ttk import Progressbar
 from tkinter.filedialog import askopenfilename, askopenfilenames, askdirectory
 from arc import help
 
-class HelpButton():
+class HelpButton:
 	def __init__(self, app):
 		self.help_but = Button(app, text = "О программе", 
 			command = self.call_help_window)
@@ -27,7 +28,7 @@ class HelpButton():
 		he.focus()
 
 # сборка: строка ввода с кнопкой
-class EnButt():
+class EnButt:
 	def __init__(self, parent = None, string = "", proc = None):
 		self.entry = Entry(parent)
 		self.entry_var = StringVar()
@@ -58,7 +59,7 @@ class EnButt():
 		return self.entry_var.get()
 		
 
-class Aggr_Gui():# панелька, ответственная за объединение срезов
+class Aggr_Gui:# панелька, ответственная за объединение срезов
 	def __init__(self, app):
 		self.app = app
 		self.agrfame = Frame(self.app, relief=GROOVE,
@@ -94,7 +95,7 @@ class Aggr_Gui():# панелька, ответственная за объед�
 
 
 
-class Srez_Gui():
+class Srez_Gui:
 	def __init__(self, app):
 		self.app = app
 		self.srezframe = Frame(self.app, relief=GROOVE,
@@ -157,7 +158,7 @@ class Srez_Gui():
 		self.srezframe.after(200, self.ready_to_execute)
 
 
-class Report_Gui():
+class Report_Gui:
 	def __init__(self, app): #parent - Tk();  root - Raport()
 		self.app = app
 		self.repframe = Frame(self.app, relief=GROOVE,
@@ -224,7 +225,7 @@ class Report_Gui():
 			self.lock_exec_button()
 		self.repframe.after(200, self.ready_to_execute)
 
-class Display_Gui():
+class Display_Gui:
 	def __init__(self, parent): #parent - Tk(); 
 		self.dispgui = Frame(parent, relief=GROOVE, 
 				borderwidth = 4, width = 700, padx = 10, pady = 10, 
@@ -249,3 +250,21 @@ class Display_Gui():
 		self.tex.see(END)
 		self.tex.config(state = DISABLED)
 		self.tex.update()
+
+class SrezProgBar(Toplevel):
+	def __init__(self, range):
+		super().__init__()
+		self.overrideredirect(True)  # убирание у прогресс бара возможности закрыться (крестик убираем)
+		self.geometry("410x100")
+		self.lab = Label(self, text='Прогресс копирования файлов.')
+		self.lab.pack(side=TOP)
+		self.pb = Progressbar(self, orient=HORIZONTAL, length=300, mode='determinate')
+		self.pb.pack(side=TOP, expand=YES, fill=BOTH)
+
+		self.range = range
+
+	def show_progress(self, nun_copied_files):
+		prog = int(nun_copied_files / self.range * 100)
+		self.pb['value'] = prog
+		self.lab.config(text=f'{nun_copied_files}/{self.range}')
+		self.update()
