@@ -1,11 +1,15 @@
-﻿import sys
+﻿from __future__ import annotations
+from typing import Optional
+import sys
 import os
+from pathlib import Path
 import csv
 
-class Work_Files():
 
-	def __init__(self, directory):
-		self.directory = directory		
+class ArchReportFiles:
+
+	def __init__(self, directory: str):
+		self.arch_reports_directory = Path(directory)
 		self.get_work_files() # список объединяемых файлов
 
 
@@ -16,7 +20,7 @@ class Work_Files():
 		self.sort_arch_list()
 		self.add_keystrings_to_result_list()
 		self.add_header_to_result()
-		return self.write_arch_list(self.directory)
+		return self.write_arch_list(self.arch_reports_directory)
 
 
 	def get_work_files(self):
@@ -25,13 +29,12 @@ class Work_Files():
 		директории есть файлы с расширением тхт, то проверяет его формат, 
 		она добавляет их в список на объединение
 		"""
-		self.workfiles=[] # список файлов, которые будут объединены
-		a = os.listdir(self.directory)
-		for entry in a:
-			if entry.endswith(".txt"):
-				temp = Work_File(entry, self.directory) 
-				if temp.valid_format:
-					self.workfiles.append(temp) # если файл с расшиернием txt в выбранном каталоге удовлетворяет формату, он добавляется в список на объединение
+		self.archivar_files: list[ArchFile]=[] # список отчетов архивариуса, которые будут объединены в общий список файлов
+
+		for entry in self.arch_reports_directory.glob('*.txt'):
+			temp = ArchFile(entry)
+			if temp.valid_format:
+				self.archivar_files.append(temp) # если файл с расшиернием txt в выбранном каталоге удовлетворяет формату, он добавляется в список на объединение
 
 	def get_global_header(self):
 		'''
@@ -40,26 +43,26 @@ class Work_Files():
 		В него попадают только те столбцы, которые присутствуют во всех файлах
 		'''
 		global_header = set()
-		for item in self.workfiles:
+		for item in self.archivar_files:
 			if len(global_header)==0:
 				global_header = item.headset
 			else:
 				global_header = global_header.intersection(item.headset)
-		global_header = global_header.difference(set(Work_File.ESSENTIAL_FIELDS))
+		global_header = global_header.difference(set(ArchFile.ESSENTIAL_FIELDS))
 		global_header_list = sorted(list(global_header))
-		global_header_list[:0] = Work_File.ESSENTIAL_FIELDS
+		global_header_list[:0] = ArchFile.ESSENTIAL_FIELDS
 		a = {i:global_header_list.index(i) for i in global_header_list}
 		# возвращает словарь с названием колонки и номером этой колонки
 		return a
 
 
 	def normalize_workfiles(self):
-		for item in self.workfiles:
+		for item in self.archivar_files:
 			item.normalize_file_list(self.global_header)
 
 	def get_result_string_set(self):
 		result_set = set()	
-		for item in self.workfiles:
+		for item in self.archivar_files:
 			if len(result_set)==0:
 				result_set = item.normal_set.copy()
 			else:
@@ -72,7 +75,7 @@ class Work_Files():
 
 	def get_key_string(self, string):
 		keywords=[]
-		for item in self.workfiles:
+		for item in self.archivar_files:
 			if string  in item.normal_set:
 				keywords.append(item.keyword)
 		k = ", ".join(keywords)
@@ -99,7 +102,7 @@ class Work_Files():
 		f_out.close()
 		return filename
 
-class Work_File():
+class ArchFile():
 	EXTENT=[".docx", ".docm", ".odt", ".xlsx", ".xlsm", ".ods", ".sxc", ".xps", ".mdb"]
 
 	FULLPATH = "полный путь"
@@ -107,13 +110,14 @@ class Work_File():
 	FILENAME = "имя файла"
 	ESSENTIAL_FIELDS = [FILENAME, DIRECTORY]
 	
-	def __init__(self, st, path):
-		self.path = os.path.join(path, st)
-		self.keyword = os.path.splitext(st)[0]#удаляет у файла расширение и обрубок использует в качестве ключевого слова
-		self.keyword = self.keyword.replace(',', "\u0326") # так как запятые - это разделители между ключемыми словами, 
-		#внутри ключевых слов не должно быть запятых, заменяем их на что-то похожее
+	def __init__(self, path: Path):
+		self.path = path # абсолютный путь до отчета архивариуса, содержащего конкретное ключевое слово
+		self.keyword = path.stem # имя файла без расширения используется в качестве ключевого слова
+		self.keyword = self.keyword.replace(',', "\u0326") # заменяем запятые внутри ключевых фраз на нечто подобное
+		# так как запятые - это разделители между ключевыми фразами, и внутри их быть не должно
+
 		self.file_list = [] # список файлов, ассоциированный с ключевым словом
-		self.normal_set = set() #множестово строк в фале. Множество, чтобы легче было исключать повторяющиеся строки из других файлов
+		self.normal_set = set() #множестово строк в файле. Множество, чтобы легче было исключать повторяющиеся строки из других файлов
 		# она присваивается в normalize_file_list, но нигде дальше не используется
 		# по умолчанию предполагаем, что у нас не полный путь, а файл архивариуса с разбивкой
 		self.fullpath = False
@@ -123,7 +127,7 @@ class Work_File():
 		else:
 			self.get_file_list_fullpath()
 		# зачем для восстановления docx передавать параметры с заголовками столбцов?
-		self.restore_docx(self.headdic[Work_File.FILENAME], self.headdic[Work_File.DIRECTORY])
+		self.restore_docx(self.headdic[ArchFile.FILENAME], self.headdic[ArchFile.DIRECTORY])
 
 	def get_header(self):
 		"""
@@ -146,13 +150,13 @@ class Work_File():
 		headlist = get_file_header(self.path)
 		self.headset = set(headlist)
 		# если есть полный путь, путь и файл, удаляем полный путь
-		if (Work_File.FULLPATH in self.headset) and self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
-			self.headset.discard(Work_File.FULLPATH)
+		if (ArchFile.FULLPATH in self.headset) and self.headset.issuperset(set(ArchFile.ESSENTIAL_FIELDS)):
+			self.headset.discard(ArchFile.FULLPATH)
 		# если есть только полный путь, ставим флаг для последующего разбития полного пути на части normalize_file_list
-		if (Work_File.FULLPATH in self.headset) and not self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
+		if (ArchFile.FULLPATH in self.headset) and not self.headset.issuperset(set(ArchFile.ESSENTIAL_FIELDS)):
 			self.fullpath = True
 		# путь присутствует: либо полный либо в виде пары путь-файл. Это правильный формат, можно обрабатывать
-		if (Work_File.FULLPATH in self.headset) or self.headset.issuperset(set(Work_File.ESSENTIAL_FIELDS)):
+		if (ArchFile.FULLPATH in self.headset) or self.headset.issuperset(set(ArchFile.ESSENTIAL_FIELDS)):
 			self.valid_format = True
 			self.headdic = {headlist[i]: i for i in range(len(headlist))} #словарь заголовка, где названию столбца сопоставляется номер столбца
 			# по названию столбца можно определить его номер
@@ -165,9 +169,9 @@ class Work_File():
 			# удаляем только возврат каретки, чтобы таб случайно не оттяпать, была такая ошибка
 			f = f_str.rstrip('\n')
 			f = f.split("\t")
-			ffilename = (f[self.headdic[Work_File.FILENAME]])
+			ffilename = (f[self.headdic[ArchFile.FILENAME]])
 			if ffilename == "": # заменияет пустые имена файлов на "text.txt"
-				f[self.headdic[Work_File.FILENAME]] = "text.txt" # этот случай возникает при обработке почтовых файлов
+				f[self.headdic[ArchFile.FILENAME]] = "text.txt" # этот случай возникает при обработке почтовых файлов
 			self.file_list.append(f) # добавляет строку к списку файлов
 		self.file_list.pop(0) # выкидывает заголовок
 
@@ -175,11 +179,11 @@ class Work_File():
 		for f_str in open(self.path, encoding="utf-16").readlines():
 			f = f_str.rstrip()
 			f = f.split("\t")
-			ffilename = os.path.basename(f[self.headdic[Work_File.FULLPATH]])
+			ffilename = os.path.basename(f[self.headdic[ArchFile.FULLPATH]])
 			# случай когда в полном пути к файлу отсутствует имя файла. Довольно сомнительно.
 			if ffilename == "":
 				ffilename = "text.txt" # получает имя файла
-			fpath = os.path.dirname(f[self.headdic[Work_File.FULLPATH]])
+			fpath = os.path.dirname(f[self.headdic[ArchFile.FULLPATH]])
 			if not fpath.endswith("\\"): 
 				fpath += "\\" # получает путь и добавляет слэш, если что
 			f.extend((fpath, ffilename)) # добавляет два новых столбца в строку
@@ -215,7 +219,7 @@ class Work_File():
 
 	def restore_docx(self, filepos, pathpos):
 		def is_docx(path):
-			for i in Work_File.EXTENT:
+			for i in ArchFile.EXTENT:
 				a= i+"|"
 				if a in path:
 					return i
@@ -262,9 +266,9 @@ if __name__ == '__main__':
 		print('В аргументе нужно указать папку с обрабатываемыми файлами.')
 		sys.exit(1)
 	print(sys.argv, len(sys.argv))
-	a = Work_Files(sys.argv[1])
+	a = ArchReportFiles(sys.argv[1])
 	print("="*40)
-	for item in a.workfiles:
+	for item in a.archivar_files:
 		print("%020s  :  %s" % (item.keyword, item.headdic))
 
 	a.execute()

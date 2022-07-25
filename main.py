@@ -1,11 +1,11 @@
 from tkinter import *
-from tkinter.ttk import Progressbar
 from tkinter.filedialog import askopenfilename, askdirectory
 from arc import LOGGER
 
 import os
 import os.path
 import sys
+from pathlib import Path
 cw = os.getcwd()
 sys.path.append(os.path.join(cw, "z"))
 
@@ -39,8 +39,8 @@ class Aggregator():
 		Делается это до запуска объединения. В смотрит заголовки файлов, опрелеляет, подойдут они или нет 
 		"""
 		self.app.output_directory = self.gu.ebun.get_var()
-		self.wof = agregator.Work_Files(os.path.normpath(self.gu.ebun.get_var()))
-		if len(self.wof.workfiles) > 0:
+		self.wof = agregator.ArchReportFiles(os.path.normpath(self.gu.ebun.get_var()))
+		if len(self.wof.archivar_files) > 0:
 			self.display_working_files() #показывает список файлов, которые будут объединяться в один
 			self.gu.unlock_exec_button() #разблокирует кнопку запуска объединения
 		else:
@@ -49,7 +49,7 @@ class Aggregator():
 
 	def display_working_files(self):
 		string = "Список файлов:\n"
-		for entry in self.wof.workfiles:
+		for entry in self.wof.archivar_files:
 			string += "   " + os.path.basename(entry.path) + "\n"
 		self.app.display(string)
 
