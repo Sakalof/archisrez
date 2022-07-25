@@ -1,5 +1,9 @@
-﻿help_text = '''20.07.2022
-v 0.56
+﻿from .__init__ import __version__, __date__
+
+
+help_text = f'{__date__}\n{__version__}'
+
+help_text += ''' 
 Автор: Соколов Дмитрий
 mail: sakalof@mail.ru
 Telegram: @sakalof

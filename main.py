@@ -13,6 +13,7 @@ from arc import agregator
 from arc import report
 from arc import srez
 from arc import gui
+from arc import __version__
 
 
 class Aggregator():
@@ -221,7 +222,7 @@ class Report():
 class Application(Tk):
 	def __init__(self):
 		super().__init__()
-		self.title("Архисрез 0.56")
+		self.title(f"Архисрез {__version__}")
 		self.minsize(580, 720)
 		self.maxsize(600, 770)
 		self.logger = LOGGER
@@ -243,7 +244,5 @@ class Application(Tk):
 			self.interf_display.add_info("-" * 50)
 
 
-print(globals())
-print(globals()['__version__'])
 app = Application()
 app.mainloop()
