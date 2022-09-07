@@ -6,7 +6,7 @@ import time
 import re
 import binascii
 from typing import Dict, Optional, TextIO
-
+from pathlib import Path
 
 Global_cur_time = time.time()
 Temp_Catalog = os.environ['TEMP'] + '\\archisrez'
@@ -69,6 +69,17 @@ class Str_entry():
 			if self.copy_file(source_path, self.dest_path):
 				self.set_copied()
 
+	def remove_disk_letter_from_path(self, dest_path):
+		common_path_template = r"(?P<diskletter>^(?P<letter>\w):)(?P<tail>\\.*)"
+		server_path_template = r"(?P<full>^\\\\(?P<short>\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}))(?P<tail>\\.+)"
+		if re.findall(common_path_template, dest_path):
+			dest_srez = re.sub(common_path_template, r"\g<letter>\g<tail>", dest_path)
+		elif re.findall(server_path_template, dest_path):
+			dest_srez = re.sub(server_path_template, r"\g<short>\g<tail>", dest_path)
+		else:
+			dest_srez = dest_path
+		return dest_srez
+
 	def get_dest_dir(self, string):
 		'''
 		Создает путь, куда будет копироваться файл. Берет изначальный путь, убирает от буквы 
@@ -76,9 +87,8 @@ class Str_entry():
 		будут скопированы все файлы.
 		'''
 		dest_path = os.path.dirname(string)
-		dest_srez = dest_path.replace(":", "") # заменяем двоеточие в названии диска на слэш
-		relative_path = dest_srez
-		dest_path = os.path.join(Prefix, dest_srez) # добавляем префикс
+		relative_path = self.remove_disk_letter_from_path(dest_path)
+		dest_path = Path(Prefix, relative_path)
 		return dest_path, relative_path
 	
 	def make_dest_dir(self):
@@ -262,7 +272,7 @@ class Str_entry():
 	def set_copied(self):
 		global Global_cur_time
 		self.copied = True
-		dest_path = self.dest_path.replace("\\\\?\\", "")
+		dest_path = str(self.dest_path).replace("\\\\?\\", "")
 		cur_file_time  = time.time()
 		timedelta = cur_file_time - Global_cur_time
 		timedelta = "%8.3f" % timedelta

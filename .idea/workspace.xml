@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f868749c-7c8f-470f-a2d5-820f688088e7" name="Default Changelist" comment="Указание версии программы вынес в __init__">
+    <list default="true" id="f868749c-7c8f-470f-a2d5-820f688088e7" name="Default Changelist" comment="Начал переделывать обработку отчетов архивариуса (модуль agregtor)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arc/agregator.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/agregator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/changelog.txt" beforeDir="false" afterPath="$PROJECT_DIR$/arc/changelog.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arc/srez.py" beforeDir="false" afterPath="$PROJECT_DIR$/arc/srez.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -223,7 +224,14 @@
       <option name="project" value="LOCAL" />
       <updated>1658747432151</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Начал переделывать обработку отчетов архивариуса (модуль agregtor)">
+      <created>1658750021664</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1658750021664</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -260,7 +268,8 @@
     <MESSAGE value="Вынес логирование в отдельный класс." />
     <MESSAGE value="Вынес прогресс бар в отдельный класс." />
     <MESSAGE value="Указание версии программы вынес в __init__" />
-    <option name="LAST_COMMIT_MESSAGE" value="Указание версии программы вынес в __init__" />
+    <MESSAGE value="Начал переделывать обработку отчетов архивариуса (модуль agregtor)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Начал переделывать обработку отчетов архивариуса (модуль agregtor)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

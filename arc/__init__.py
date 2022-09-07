@@ -1,4 +1,4 @@
 ﻿from arc import mainlog
 LOGGER = mainlog.Logger()
-__version__ = '0.56'
-__date__ = '22.07.2022'
+__version__ = '0.57'
+__date__ = '07.09.2022'
