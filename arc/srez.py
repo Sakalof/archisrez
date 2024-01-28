@@ -1,4 +1,6 @@
-﻿import os
+﻿from arc import get_unicode_encoding
+
+import os
 import sys
 import shutil
 import subprocess
@@ -295,20 +297,20 @@ def init_from_utf16_file_list(path: str, utf_encoding: str) -> list[Str_entry]:
 	return file_records
 
 
-def get_unicode_encoding(file: str) -> Optional[str]:
-	e = None
-	for enc in ['utf-8-sig', 'utf-16']:
-		t = open(file, 'r', encoding=enc)
-		try:
-			t.readline()
-		except UnicodeDecodeError:
-			pass
-		else:
-			e = enc
-			break
-		finally:
-			t.close()
-	return e
+# def get_unicode_encoding(file: str) -> Optional[str]:
+# 	e = None
+# 	for enc in ['utf-8-sig', 'utf-16']:
+# 		t = open(file, 'r', encoding=enc)
+# 		try:
+# 			t.readline()
+# 		except UnicodeDecodeError:
+# 			pass
+# 		else:
+# 			e = enc
+# 			break
+# 		finally:
+# 			t.close()
+# 	return e
 
 def is_valid_format(file: str, encoding: str):
 	header_str=open(file, "r", encoding = encoding).readline()

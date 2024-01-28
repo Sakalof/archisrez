@@ -1,5 +1,6 @@
 ﻿from __future__ import annotations
-from typing import Optional
+from arc import get_unicode_encoding
+
 import sys
 import os
 from pathlib import Path
@@ -140,8 +141,8 @@ class ArchFile():
 		fullpath(Bool) - является ли файл списком файлов (либо архивариуса)
 		hheaddic(словарь) - словарь столбцов, где названию столбца поставлен номер столбца
 		"""
-		def get_file_header(fpath):
-			headstr = open(fpath, encoding="utf-16").readline()# первая строка, ищет заголовок
+		def get_file_header(fpath: Path):
+			headstr = open(fpath, encoding=get_unicode_encoding(str(self.path))).readline()# первая строка, ищет заголовок
 			headstr = headstr.rstrip()
 			headstr = headstr.lower() # понижаем региср в заголовке для того, чтобы можно было нормально сравнивать
 			headlist = headstr.split("\t")
@@ -165,7 +166,7 @@ class ArchFile():
 
 
 	def get_file_list(self):
-		for f_str in open(self.path, encoding="utf-16").readlines():
+		for f_str in open(self.path, encoding=get_unicode_encoding(str(self.path))).readlines():
 			# удаляем только возврат каретки, чтобы таб случайно не оттяпать, была такая ошибка
 			f = f_str.rstrip('\n')
 			f = f.split("\t")
@@ -176,7 +177,7 @@ class ArchFile():
 		self.file_list.pop(0) # выкидывает заголовок
 
 	def get_file_list_fullpath(self):
-		for f_str in open(self.path, encoding="utf-16").readlines():
+		for f_str in open(self.path, encoding=get_unicode_encoding(str(self.path))).readlines():
 			f = f_str.rstrip()
 			f = f.split("\t")
 			ffilename = os.path.basename(f[self.headdic[ArchFile.FULLPATH]])

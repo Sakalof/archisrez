@@ -1,3 +1,5 @@
+from arc import get_unicode_encoding
+
 from tkinter import *
 from tkinter.filedialog import askopenfilename, askdirectory
 from arc import LOGGER
@@ -95,7 +97,7 @@ class Srez():
 
 		self.app.display("Подготовлены.")
 		# определяем кодировку файла среза
-		srez_file_encoding = srez.get_unicode_encoding(self.gu.gui_file.get_var())
+		srez_file_encoding = get_unicode_encoding(self.gu.gui_file.get_var())
 		if srez_file_encoding is None:
 			self.app.display("Файл имеет неверную кодировку (не Юникод).")
 			# не просто ретурн возвращать, а код ошибки
