@@ -1,4 +1,3 @@
-from arc import get_unicode_encoding
 
 from tkinter import *
 from tkinter.filedialog import askopenfilename, askdirectory
@@ -8,21 +7,22 @@ import os
 import os.path
 import sys
 from pathlib import Path
-cw = os.getcwd()
-sys.path.append(os.path.join(cw, "z"))
 
+from arc import get_unicode_encoding
 from arc import agregator
-from arc import report
+from arc.create_report import create_all
 from arc import srez
 from arc import gui
 from arc import __version__
+cw = os.getcwd()
+sys.path.append(os.path.join(cw, "z"))
 
 
 class Aggregator():
 	def __init__(self, app):
 		self.app = app
 		self.gu = gui.Aggr_Gui(self.app)
-		#привязка функций к виджетам: для кнопки; для строки ввода; для кнопки исполнения
+		# привязка функций к виджетам: для кнопки; для строки ввода; для кнопки исполнения
 		self.gu.bind_functions(self.button_dir, self.entry_dir, self.agregate_files)
 
 	def entry_dir(self, event):
@@ -43,8 +43,8 @@ class Aggregator():
 		self.app.output_directory = self.gu.ebun.get_var()
 		self.wof = agregator.ArchReportFiles(os.path.normpath(self.gu.ebun.get_var()))
 		if len(self.wof.archivar_files) > 0:
-			self.display_working_files() #показывает список файлов, которые будут объединяться в один
-			self.gu.unlock_exec_button() #разблокирует кнопку запуска объединения
+			self.display_working_files()  # показывает список файлов, которые будут объединяться в один
+			self.gu.unlock_exec_button()  # разблокирует кнопку запуска объединения
 		else:
 			self.app.display("Каталог не содержит нужных файлов.")
 			self.gu.lock_exec_button()
@@ -62,17 +62,15 @@ class Aggregator():
 		"""			
 		arc_out_list = self.wof.execute()
 		self.app.display("Создан файл %s." % arc_out_list)
-		self.app.interf_srez.gu.gui_file.set_var(arc_out_list)# и передает имя суммарного файла в секцию для копирования
+		self.app.interf_srez.gu.gui_file.set_var(arc_out_list)  # и передает имя суммарного файла в секцию для копирования
 		self.app.interf_srez.arch_list = arc_out_list
 	
-
 
 class Srez():
 	def __init__(self, app):
 		self.app = app
 		self.gu = gui.Srez_Gui(self.app )
 		self.gu.bind_functions(self.open_file_list, self.open_srez_dir, self.copy_files)
-
 
 	def open_file_list(self):
 		self.gu.gui_file.set_var(os.path.normpath(askopenfilename()))
@@ -217,7 +215,7 @@ class Report():
 		return os.path.normpath(otchet_path)
 
 	def make_otchet(self, event = None):
-		report.create_all(self.gu.gui_file.get_var(), self.gu.gui_dir.get_var())
+		create_all(self.gu.gui_file.get_var(), self.gu.gui_dir.get_var())
 		self.app.display("Создан отчет по скопированным файлам.")
 
 
@@ -225,8 +223,8 @@ class Application(Tk):
 	def __init__(self):
 		super().__init__()
 		self.title(f"Архисрез {__version__}")
-		self.minsize(580, 720)
-		self.maxsize(600, 770)
+		self.minsize(600, 720)
+		self.maxsize(700, 770)
 		self.logger = LOGGER
 		self.logger.debug("=" * 60)
 		self.logger.debug("Program Started")

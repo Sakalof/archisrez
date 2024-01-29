@@ -13,9 +13,9 @@ class HelpButton:
 	def call_help_window(self):
 		help_win = Toplevel()
 		help_win.title("О программе")
-		he = Text(help_win, width = 80, height = 24, background = "white", 
+		he = Text(help_win, width = 80, height = 40, background = "white",
 			relief = SUNKEN, bd = 3, 
-			font = "Arial 9",
+			font = "Arial 11",
 			wrap = WORD)
 		scroller = Scrollbar(help_win, orient = VERTICAL, 
 			command = he.yview)

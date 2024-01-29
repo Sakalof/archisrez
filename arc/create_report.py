@@ -1,6 +1,6 @@
 ﻿import sys
 import os
-import report_template as rt
+import arc.report_template as rt
 from collections import Counter
 
 RESET_BUTTON_NAME = "Все файлы"
