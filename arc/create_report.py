@@ -79,7 +79,7 @@ def make_buttons(keyword_dict: dict[str, str]) -> str:
 rec_temp = ''' <div class="{0}">
                 <span class="number">({1})
                   <span class="tooltip">{2}</span>
-                </span><a href="..\\{3}" target="_blank">{3}</a>
+                </span><a href=".\\{3}" target="_blank">{3}</a>
               </div>\n'''
 
 

@@ -206,7 +206,8 @@ class Report():
 		копироваться файлы отчета 
 		'''
 		f = open(copy_log, "r", encoding="utf16")
-		string = f.readline()#читаем вторую строку
+		string = f.readline()  # зашоловок файла
+		string = f.readline()  # первая стрка с путями
 		f.close()
 		paths = string.split("\t")
 		dest = paths[1]
