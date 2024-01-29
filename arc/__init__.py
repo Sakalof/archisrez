@@ -1,10 +1,11 @@
-﻿from arc import mainlog
+﻿from typing import Optional
+from arc import mainlog
 LOGGER = mainlog.Logger()
 __version__ = '0.58'
 __date__ = '29.01.2022'
 
 
-def get_unicode_encoding(file: str) -> None | str:
+def get_unicode_encoding(file: str) -> Optional[str]:
     """
     Определяет кодировку файла. Выбор небольшой: UTF8 или UTF16
     Файлы не в юникод-кодировке читаться не будут
